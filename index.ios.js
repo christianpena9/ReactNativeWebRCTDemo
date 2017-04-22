@@ -1,4 +1,8 @@
+import { AppRegistry } from 'react-native';
+import ReactNativeWebRCTDemo from './main';
+
 if (!window.navigator.userAgent) {
     window.navigator.userAgent = 'react-native';
 }
-require('./main');
+
+AppRegistry.registerComponent('ReactNativeWebRCTDemo', () => ReactNativeWebRCTDemo);
