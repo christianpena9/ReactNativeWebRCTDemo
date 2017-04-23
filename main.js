@@ -28,19 +28,26 @@ export default class ReactNativeWebRCTDemo extends Component {
             isFront : true,
             endHidden: true,
             declineHidden: false,
-            answerHidden: false
+            answerCallHidden: false
         }
     } // end of constructor
 
-  render() {
-    return (
-        <View style={styles.container}>
-            <TouchableOpacity style={this.state.answerHidden ? styles.answerHidden : styles.answer} onPress = { () => {this.answerPhone()} }>
-                <Text style={styles.text}>
-                    Answer
-                </Text>
-            </TouchableOpacity>
-        </View>
-    );
-  }
+    answerPhone(){
+        this.setState({endHidden: false});
+        this.setState({declineHidden: true});
+        this.setState({answerHidden: true});
+    }
+
+    render() {
+        return (
+            <View style={styles.container}>
+                <TouchableOpacity style={this.state.answerCallHidden ? styles.answerCallHidden : styles.answerCall} onPress = { () => {this.answerPhone()} } >
+                    <Text style={styles.text}>Answer</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={this.state.endCallHidden ? styles.endCallHidden : styles.endCall} onPress={()=>{this.endCall()}}>
+                    <Text style={styles.text}>End</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
 }
