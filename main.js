@@ -26,27 +26,50 @@ export default class ReactNativeWebRCTDemo extends Component {
         this.state = {
             videoURL : null,
             isFront : true,
-            endHidden: true,
-            declineHidden: false,
-            answerCallHidden: false
+            status: true,
+            endCallStatus: true
         }
     } // end of constructor
 
-    answerPhone(){
-        this.setState({endHidden: false});
-        this.setState({declineHidden: true});
-        this.setState({answerHidden: true});
+    // this function toggles status and sets endCallStatus to false
+    toggleStatus() {
+        this.setState({
+          status:!this.state.status, endCallStatus: false
+        });
     }
 
     render() {
+
+        // variables to store TouchableOpacity component
+        let answerCall  = null;
+        let declineCall = null;
+        let endCall     = null;
+
+        // checking the status, if true then take TouchableOpacity
+        // and save it to the variable
+        if(this.state.status) {
+            answerCall =
+            <TouchableOpacity style={styles.answerCall} onPress = { () => this.toggleStatus() } >
+                <Text style={styles.text}>Answer</Text>
+            </TouchableOpacity>;
+            declineCall =
+            <TouchableOpacity style={styles.declineCall} onPress={ () => this.toggleStatus() }>
+                <Text style={styles.text}>Decline</Text>
+            </TouchableOpacity>;
+        }
+
+        if(!this.state.endCallStatus) {
+            endCall =
+            <TouchableOpacity style={styles.endCall} onPress={ () => this.setState({endCallStatus:true}) }>
+                <Text style={styles.text}>End</Text>
+            </TouchableOpacity>;
+        }
+
         return (
             <View style={styles.container}>
-                <TouchableOpacity style={this.state.answerCallHidden ? styles.answerCallHidden : styles.answerCall} onPress = { () => {this.answerPhone()} } >
-                    <Text style={styles.text}>Answer</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={this.state.endCallHidden ? styles.endCallHidden : styles.endCall} onPress={()=>{this.endCall()}}>
-                    <Text style={styles.text}>End</Text>
-                </TouchableOpacity>
+                {endCall}
+                {answerCall}
+                {declineCall}
             </View>
         );
     }
