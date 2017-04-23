@@ -20,20 +20,27 @@ import {
 import { styles } from './styles/mainStyle';
 
 export default class ReactNativeWebRCTDemo extends Component {
+
+    constructor() {
+        super();
+        this.state = {
+            videoURL : null,
+            isFront : true,
+            endHidden: true,
+            declineHidden: false,
+            answerHidden: false
+        }
+    } // end of constructor
+
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
-      </View>
+        <View style={styles.container}>
+            <TouchableOpacity style={this.state.answerHidden ? styles.answerHidden : styles.answer} onPress = { () => {this.answerPhone()} }>
+                <Text style={styles.text}>
+                    Answer
+                </Text>
+            </TouchableOpacity>
+        </View>
     );
   }
 }
