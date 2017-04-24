@@ -51,6 +51,22 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    videoLarge : {
+        flex: 1,
+        borderWidth: 1
+    },
+    videoSmall : {
+      position:'absolute',
+      borderWidth: 1,
+      alignSelf: "center",
+      height:100,
+      width: 100,
+      left: 540,
+      top: 71,
+      borderColor: 'green',
+      borderWidth: 5
+      // zIndex: 1
+    },
     text: {
         fontSize: 35,
         color: 'white'
