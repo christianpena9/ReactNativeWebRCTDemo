@@ -41,9 +41,10 @@ export default class ReactNativeWebRCTDemo extends Component {
         this.setState({
           status:!this.state.status, endCallStatus: false
         });
+        this.startCall();
     }
 
-    componentDidMount() {
+    startCall() {
         const configuration = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
         const pc = new RTCPeerConnection(configuration);
         const { isFront } = this.state;
@@ -60,8 +61,8 @@ export default class ReactNativeWebRCTDemo extends Component {
                 audio: true,
                 video: {
                     mandatory: {
-                        width: window.width, // Provide your own width, height and frame rate here
-                        height: window.height,
+                        width: 0, // Provide your own width, height and frame rate here
+                        height: 0,
                         minFrameRate: 30
                     },
                     facingMode: (isFront ? 'user' : 'environment'),
@@ -88,7 +89,7 @@ export default class ReactNativeWebRCTDemo extends Component {
         pc.onicecandidate = (event) => {
             console.log('onicecandidate', event);
         };
-    } // end of componentDidMount
+    } // end of startCall
 
     render() {
 

@@ -53,19 +53,15 @@ export const styles = StyleSheet.create({
     },
     videoLarge : {
         flex: 1,
-        borderWidth: 1
+        width: window.width,
+        height: window.height,
     },
     videoSmall : {
       position:'absolute',
-      borderWidth: 1,
-      alignSelf: "center",
-      height:100,
-      width: 100,
-      left: 540,
-      top: 71,
-      borderColor: 'green',
-      borderWidth: 5
-      // zIndex: 1
+      height:200,
+      width: 200,
+      left: window.width-164,
+      top: 0,
     },
     text: {
         fontSize: 35,
