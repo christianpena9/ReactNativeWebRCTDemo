@@ -17,12 +17,14 @@ import {
   MediaStreamTrack,
   getUserMedia
 } from 'react-native-webrtc';
+import io from 'socket.io-client/dist/socket.io';
 
 /* CUSTOM IMPORT STYLES BELOW */
 import { styles } from './styles/mainStyle';
 
 const Dimensions = require('Dimensions');
 const window = Dimensions.get('window');
+const socket = io.connect('http://192.168.1.9:3000', {jsonp: false});
 
 export default class ReactNativeWebRCTDemo extends Component {
 
@@ -30,7 +32,6 @@ export default class ReactNativeWebRCTDemo extends Component {
         super();
         this.state = {
             videoURL : null,
-            isFront : true,
             status: true,
             endCallStatus: true
         }
@@ -45,51 +46,49 @@ export default class ReactNativeWebRCTDemo extends Component {
     }
 
     startCall() {
-        const configuration = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
-        const pc = new RTCPeerConnection(configuration);
-        const { isFront } = this.state;
-        MediaStreamTrack.getSources(sourceInfos => {
-            console.log('MediaStreamTrack.getSources', sourceInfos);
-            let videoSourceId;
-            for (let i = 0; i < sourceInfos.length; i++) {
-                const sourceInfo = sourceInfos[i];
-                if(sourceInfo.kind === 'video' && sourceInfo.facing === (isFront ? 'front' : 'back')) {
-                    videoSourceId = sourceInfo.id;
+        //const configuration = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
+        //const pc1 = new RTCPeerConnection(configuration);
+        //const pc2 = new RTCPeerConnection(configuration);
+        const constraints = {
+            audio: true,
+            video: {
+                mandatory: {
+                    width: 0,
+                    height: 0,
+                    minFrameRate: 30
                 }
             }
-            getUserMedia({
-                audio: true,
-                video: {
-                    mandatory: {
-                        width: 0, // Provide your own width, height and frame rate here
-                        height: 0,
-                        minFrameRate: 30
-                    },
-                    facingMode: (isFront ? 'user' : 'environment'),
-                    optional: (videoSourceId ? [{sourceId: videoSourceId}] : [])
-                }
-            }, (stream) => {
-                console.log('Streaming ok = ', stream);
-                this.setState({
-                    videoURL : stream.toURL()
-                });
-                pc.addStream(stream);
-            }, error => {
-                console.log("Oooops we got an error!", error.message);
-                throw error;
-            });
-        });
-        pc.createOffer((desc) => {
-            pc.setLocalDescription(desc, () => {
-                // Send pc.localDescription to peer
-                console.log('pc.setLocalDescription');
-            }, (e) => { throw e; });
-        }, (e) => { throw e; });
-
-        pc.onicecandidate = (event) => {
-            console.log('onicecandidate', event);
         };
+
+        var successCallback = (stream) => {
+            this.setState({
+                videoURL : stream.toURL()
+            });
+            //pc.addStream(stream);
+        }
+
+        var errorCallback = (error) => {
+            console.log("Oooops we got an error!", error.message);
+            throw error;
+        }
+
+        getUserMedia(constraints, successCallback, errorCallback);
+
+        // pc.createOffer((desc) => {
+        //     pc.setLocalDescription(desc, () => {
+        //         // Send pc.localDescription to peer
+        //         console.log('pc.setLocalDescription');
+        //     }, (e) => { throw e; });
+        // }, (e) => { throw e; });
+        //
+        // pc.onicecandidate = (event) => {
+        //     console.log('onicecandidate', event);
+        // };
     } // end of startCall
+
+    hangUp() {
+        this.setState({endCallStatus:true});
+    }
 
     render() {
 
@@ -113,7 +112,7 @@ export default class ReactNativeWebRCTDemo extends Component {
 
         if(!this.state.endCallStatus) {
             endCall =
-            <TouchableOpacity style={styles.endCall} onPress={ () => this.setState({endCallStatus:true}) }>
+            <TouchableOpacity style={styles.endCall} onPress={ () => this.hangUp() }>
                 <Text style={styles.text}>End</Text>
             </TouchableOpacity>;
         }
