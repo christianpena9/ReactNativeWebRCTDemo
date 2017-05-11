@@ -22,9 +22,11 @@ import io from 'socket.io-client/dist/socket.io';
 /* CUSTOM IMPORT STYLES BELOW */
 import { styles } from './styles/mainStyle';
 
-const Dimensions = require('Dimensions');
-const window = Dimensions.get('window');
-const socket = io.connect('http://192.168.1.9:3000', {jsonp: false});
+/*Note: Remember to update the ip address to your current one*/
+const socket = io.connect('http://192.168.0.21:3000', {jsonp: false});
+socket.on('message', (data) => {
+    console.log(data.text);
+});
 
 export default class ReactNativeWebRCTDemo extends Component {
 
