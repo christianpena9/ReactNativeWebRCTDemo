@@ -23,9 +23,26 @@ import io from 'socket.io-client/dist/socket.io';
 import { styles } from './styles/mainStyle';
 
 /*Note: Remember to update the ip address to your current one*/
-const socket = io.connect('http://192.168.0.21:3000', {jsonp: false});
-socket.on('message', (data) => {
-    console.log(data.text);
+
+// create a connection to the server
+const socket = io.connect('http://192.168.1.11:3000', {jsonp: false});
+
+// when the socket is connected to the client, we then can do something
+socket.on('connect', () => {
+    console.log(socket.id, 'has connected to client!');
+    socket.emit('joinSignalRoom', {
+        name: socket.id,
+        room: 'signalRoom'
+    });
+});
+
+socket.on('message', (message) => {
+    console.log(message.name, message.text);
+});
+
+// when the socket is disconnected from the client, we then can do something else
+socket.on('disconnect', () => {
+    console.log(socket.id, 'has disconnected from client!');
 });
 
 export default class ReactNativeWebRCTDemo extends Component {
