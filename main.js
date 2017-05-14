@@ -30,19 +30,32 @@ const socket = io.connect('http://192.168.1.11:3000', {jsonp: false});
 // when the socket is connected to the client, we then can do something
 socket.on('connect', () => {
     console.log(socket.id, 'has connected to client!');
-    socket.emit('joinSignalRoom', {
-        name: socket.id,
-        room: 'signalRoom'
-    });
-});
 
+    // Emit data to joinSignalVideoRoom
+    socket.emit('joinSignalVideoRoom', {
+        name: socket.id,
+        room: 'signalVideoRoom'
+    });
+
+    //Send a first signaling message to anyone listening
+    //This normally would be on a button click
+    // Emit data to signal
+    socket.emit('signal', {
+        type: 'user_here',
+        message: 'Are you ready for a call?',
+        room: 'signalVideoRoom'
+    });
+}); // end of socket connect
+
+
+// Listen for message
 socket.on('message', (message) => {
     console.log(message.name, message.text);
 });
 
-// when the socket is disconnected from the client, we then can do something else
-socket.on('disconnect', () => {
-    console.log(socket.id, 'has disconnected from client!');
+// Listen for signaling_message
+socket.on('signaling_message', (data) => {
+    console.log(data);
 });
 
 export default class ReactNativeWebRCTDemo extends Component {
@@ -50,7 +63,8 @@ export default class ReactNativeWebRCTDemo extends Component {
     constructor() {
         super();
         this.state = {
-            videoURL : null,
+            myVideoURL: null,
+            theirVideoURL: null,
             status: true,
             endCallStatus: true
         }
@@ -81,7 +95,7 @@ export default class ReactNativeWebRCTDemo extends Component {
 
         var successCallback = (stream) => {
             this.setState({
-                videoURL : stream.toURL()
+                myVideoURL: stream.toURL()
             });
             //pc.addStream(stream);
         }
@@ -138,8 +152,8 @@ export default class ReactNativeWebRCTDemo extends Component {
 
         return (
             <View style={styles.container}>
-                <RTCView streamURL={this.state.videoURL} style={styles.videoSmall}/>
-                <RTCView streamURL={this.state.videoURL} style={styles.videoLarge}/>
+                <RTCView streamURL={this.state.myVideoURL} style={styles.videoSmall}/>
+                <RTCView streamURL={this.state.theirVideoURL} style={styles.videoLarge}/>
                 {endCall}
                 {answerCall}
                 {declineCall}

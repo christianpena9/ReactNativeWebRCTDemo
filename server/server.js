@@ -14,9 +14,24 @@ io.on('connection', (socket) => {
     // The event will be called when a client is disconnected
     socket.on('disconnect', () => {
         console.log(socket.id, 'has disconnected from server!');
-    });
+        var userData = clientInfo[socket.id];
 
-    socket.on('joinSignalRoom', (data) => {
+        if(typeof userData !== 'undefined') {
+            socket.leave(userData.room);
+
+            // let everyone else know that a user has left. This is for debugging
+            io.to(userData.room).emit('message', {
+                name: 'Server: ',
+                text: userData.name + ' has left!'
+            });
+
+            // delete an attribute from the clientInfo object
+            delete clientInfo[socket.id];
+        }
+    }); // end of disconnect
+
+    // Listen for joinSignalVideoRoom
+    socket.on('joinSignalVideoRoom', (data) => {
         clientInfo[socket.id] = data;
         socket.join(data.room);
 
@@ -31,15 +46,26 @@ io.on('connection', (socket) => {
 
         //emit a message letting everyone in the room that
         //that someone has joined
+        // Emit data to message
         socket.broadcast.to(data.room).emit('message', {
             name: 'Server: ',
             text: data.name + ' has joined!'
         }); // end of socket.broadcast
     }); // end of joinSignalRoom
 
+    // Listen for message
     socket.on('message', (message) => {
-        io.to(clientInfo[socket.id].room).emit('message', message)
+        socket.to(clientInfo[socket.id].room).emit('message', message)
     });
+
+    // Listen for signal
+    socket.on('signal', (data) => {
+        // sending to all clients in 'joinSignalVideoRoom' room except sender
+        socket.to(data.room).emit('signaling_message', {
+            type: data.type,
+            message: data.message
+        });
+    }); // end of signal
 
 }); // end of connection
 
