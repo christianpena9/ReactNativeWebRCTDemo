@@ -26,6 +26,8 @@ const Dimensions = require('Dimensions');
 const window = Dimensions.get('window');
 const socket = io.connect('http://192.168.1.9:3000', {jsonp: false});
 
+var videoStream = {};
+
 export default class ReactNativeWebRCTDemo extends Component {
 
     constructor() {
@@ -37,13 +39,14 @@ export default class ReactNativeWebRCTDemo extends Component {
         }
     } // end of constructor
 
-    // this function toggles status and sets endCallStatus to false
-    toggleStatus() {
-        this.setState({
-          status:!this.state.status, endCallStatus: false
-        });
-        this.startCall();
+
+    componentWillUpdate(){
+      console.log("component did update!");
     }
+    // this function toggles status and sets endCallStatus to false
+    // toggleStatus() {
+    //     this.startCall();
+    // }
 
     startCall() {
         //const configuration = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
@@ -61,11 +64,33 @@ export default class ReactNativeWebRCTDemo extends Component {
         };
 
         var successCallback = (stream) => {
+          if (videoStream.run === undefined) {
             this.setState({
-                videoURL : stream.toURL()
+              videoURL : stream.toURL(),
+              status:!this.state.status,
+              endCallStatus: false
             });
-            //pc.addStream(stream);
+            videoStream = stream;
+            videoStream.run = true;
+
+            console.log("1st if stat/ new URL is = ", this.state.videoURL);
+            console.log(stream.toURL);
+            console.log(stream.run);
+          } else{
+            this.setState({
+              videoURL : videoStream.toURL(),
+              status:!this.state.status,
+              endCallStatus: false
+            });
+            console.log("else stat/ new URL is = ", this.state.videoURL);
+            console.log(videoStream.toURL);
+            console.log(videoStream.run);
+          }
+
+
         }
+
+
 
         var errorCallback = (error) => {
             console.log("Oooops we got an error!", error.message);
@@ -73,21 +98,15 @@ export default class ReactNativeWebRCTDemo extends Component {
         }
 
         getUserMedia(constraints, successCallback, errorCallback);
-
-        // pc.createOffer((desc) => {
-        //     pc.setLocalDescription(desc, () => {
-        //         // Send pc.localDescription to peer
-        //         console.log('pc.setLocalDescription');
-        //     }, (e) => { throw e; });
-        // }, (e) => { throw e; });
-        //
-        // pc.onicecandidate = (event) => {
-        //     console.log('onicecandidate', event);
-        // };
     } // end of startCall
 
     hangUp() {
-        this.setState({endCallStatus:true});
+      this.setState({videoURL:null});
+      this.setState({status:true});
+      this.setState({endCallStatus:true});
+      // console.log(videoStream);
+      // videoStream.active = false;
+      // console.log(videoStream);
     }
 
     render() {
@@ -101,13 +120,13 @@ export default class ReactNativeWebRCTDemo extends Component {
         // and save it to the variable
         if(this.state.status) {
             answerCall =
-            <TouchableOpacity style={styles.answerCall} onPress = { () => this.toggleStatus() } >
-                <Text style={styles.text}>Answer</Text>
-            </TouchableOpacity>;
+              <TouchableOpacity style={styles.answerCall} onPress = { () => this.startCall() } >
+                  <Text style={styles.text}>Answer</Text>
+              </TouchableOpacity>;
             declineCall =
-            <TouchableOpacity style={styles.declineCall} onPress={ () => this.setState({status:false}) }>
-                <Text style={styles.text}>Decline</Text>
-            </TouchableOpacity>;
+              <TouchableOpacity style={styles.declineCall} onPress={ () => this.setState({status:false}) }>
+                  <Text style={styles.text}>Decline</Text>
+              </TouchableOpacity>;
         }
 
         if(!this.state.endCallStatus) {
