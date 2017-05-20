@@ -18,7 +18,12 @@ import {
   MediaStreamTrack,
   getUserMedia
 } from 'react-native-webrtc';
+
 import io from 'socket.io-client/dist/socket.io';
+import DeviceInfo from 'react-native-device-info';
+console.log(DeviceInfo);
+console.log(DeviceInfo.getUserAgent());
+
 
 /* CUSTOM IMPORT STYLES BELOW */
 import { styles } from './styles/mainStyle';
