@@ -65,6 +65,15 @@ export default class ReactNativeWebRCTDemo extends Component {
             this.setState({
                 myVideoURL: stream.toURL()
             });
+
+            var configuration = {
+                "iceServers": [{ "url": "stun:stun.1.google.com:19302" }]
+            };
+
+            var pc = new RTCPeerConnection(configuration);
+            console.log('---RTCPeerConnection Below---');
+            console.log(pc);
+
         }
 
         var errorCallback = (error) => {
