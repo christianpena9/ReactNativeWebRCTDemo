@@ -8,6 +8,7 @@ import {
     View,
     TouchableOpacity
 } from 'react-native';
+
 import {
   RTCPeerConnection,
   RTCIceCandidate,
@@ -27,37 +28,6 @@ import { styles } from './styles/mainStyle';
 // create a connection to the server
 const socket = io.connect('http://192.168.1.11:3000', {jsonp: false});
 
-// when the socket is connected to the client, we then can do something
-socket.on('connect', () => {
-    console.log(socket.id, 'has connected to client!');
-
-    // Emit data to joinSignalVideoRoom
-    socket.emit('joinSignalVideoRoom', {
-        name: socket.id,
-        room: 'signalVideoRoom'
-    });
-
-    //Send a first signaling message to anyone listening
-    //This normally would be on a button click
-    // Emit data to signal
-    socket.emit('signal', {
-        type: 'user_here',
-        message: 'Are you ready for a call?',
-        room: 'signalVideoRoom'
-    });
-}); // end of socket connect
-
-
-// Listen for message
-socket.on('message', (message) => {
-    console.log(message.name, message.text);
-});
-
-// Listen for signaling_message
-socket.on('signaling_message', (data) => {
-    console.log(data);
-});
-
 export default class ReactNativeWebRCTDemo extends Component {
 
     constructor() {
@@ -75,13 +45,11 @@ export default class ReactNativeWebRCTDemo extends Component {
         this.setState({
           status:!this.state.status, endCallStatus: false
         });
+        //this.startSignaling();
         this.startCall();
     }
 
     startCall() {
-        //const configuration = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
-        //const pc1 = new RTCPeerConnection(configuration);
-        //const pc2 = new RTCPeerConnection(configuration);
         const constraints = {
             audio: true,
             video: {
@@ -97,7 +65,6 @@ export default class ReactNativeWebRCTDemo extends Component {
             this.setState({
                 myVideoURL: stream.toURL()
             });
-            //pc.addStream(stream);
         }
 
         var errorCallback = (error) => {
@@ -107,16 +74,6 @@ export default class ReactNativeWebRCTDemo extends Component {
 
         getUserMedia(constraints, successCallback, errorCallback);
 
-        // pc.createOffer((desc) => {
-        //     pc.setLocalDescription(desc, () => {
-        //         // Send pc.localDescription to peer
-        //         console.log('pc.setLocalDescription');
-        //     }, (e) => { throw e; });
-        // }, (e) => { throw e; });
-        //
-        // pc.onicecandidate = (event) => {
-        //     console.log('onicecandidate', event);
-        // };
     } // end of startCall
 
     hangUp() {
@@ -159,5 +116,5 @@ export default class ReactNativeWebRCTDemo extends Component {
                 {declineCall}
             </View>
         );
-    }
-}
+    } // end of render
+} // end of ReactNativeWebRCTDemo
