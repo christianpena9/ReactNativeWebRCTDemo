@@ -4,23 +4,32 @@ const server  = require('http').Server(app);
 const io      = require('socket.io')(server);
 const port    = process.env.PORT || 3000;
 
+
 // The event will be called when a client is connected.
 io.on('connection', (socket) => {
-    console.log(socket.id, 'has connected!');
+  console.log("we have a new connection @ " + socket.id);
 
-    function join(roomID) {
-        socket.emit('join', roomID, function(socketIds) {
-            console.log('join', socketIds);
-        });
-    }
+  socket.on('disconnect', () => {
+    console.log(socket.id, " has signed out!");
+  });
 
-    // The event will be called when a client is disconnected
-    socket.on('disconnect', () => {
-        console.log(socket.id, 'has disconnected!');
-    });
+
+
+  socket.on('isSwitchOn-client', (data) => {
+      console.log("is switch on? =>", data);
+      io.sockets.emit('isSwitchOn-server', data);
+  });
+
+  socket.on('calling-client', (data) => {
+      console.log("calling data=>", data);
+      io.sockets.emit('calling-server', data);
+  });
+
+
+
 });
 
-// Runs once the server is online
-server.listen(port, () => {
-    console.log('server is running @ ', port);
-});
+
+
+// Once the server is online
+server.listen(port, ()=>console.log("server is running @ ", port));
