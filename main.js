@@ -24,7 +24,7 @@ import {
 } from 'react-native-webrtc';
 import io from 'socket.io-client/dist/socket.io';
 import "./UserAgent";
-import { StackNavigator } from 'react-navigation';
+import { StackNavigator, } from 'react-navigation';
 /* CUSTOM IMPORT SCREENS BELOW */
 import ReceiverScreen from './screens/ReceiverScreen';
 import ClientScreen from './screens/ClientScreen';
@@ -38,6 +38,9 @@ const window = Dimensions.get('window');
 var videoStream = {};
 
 export default class HomeScreen extends Component {
+  static navigationOptions = {
+    title: 'home!!!',
+  };
 
     constructor() {
         super();
@@ -76,8 +79,9 @@ export default class HomeScreen extends Component {
 
 
 
-    componentWillUpdate(){
+    componentDidMount(){
       console.log("component did update!");
+      console.log(this.props.navigation);
     }
     // this function toggles status and sets endCallStatus to false
     // toggleStatus() {
@@ -167,7 +171,9 @@ export default class HomeScreen extends Component {
     }
 
     render() {
-      const { navigate } = this.props.navigation;
+      console.log(this);
+      // const { navigate } = this.props.navigation;
+
       let available;
 
       // variables to store TouchableOpacity component
@@ -247,6 +253,7 @@ export default class HomeScreen extends Component {
           <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: this.state.backColor}}>
 
             {homePage}
+
           </View>
         );
     }
